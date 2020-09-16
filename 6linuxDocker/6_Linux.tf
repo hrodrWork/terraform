@@ -54,10 +54,21 @@ resource "aws_default_vpc" "default" {
 
 }
 
+resource "aws_security_group" "allow_ssh" {
+  name        = "ubuntu"
+  description = "Allow ports for nginx demo"
+  vpc_id      = aws_default_vpc.default.id
 
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 
-resource "aws_instance" "nginx" {
-  ami                    = data.aws_ami.aws-linux.id
+resource "aws_instance" "ubuntuHector" {
+  ami                    = "ami-0010d386b82bc06f0"
   instance_type          = "t2.micro"
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
@@ -77,6 +88,3 @@ resource "aws_instance" "nginx" {
 # OUTPUT
 ##################################################################################
 
-output "aws_instance_public_dns" {
-  value = aws_instance.nginx.public_dns
-}
